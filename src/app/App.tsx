@@ -59,7 +59,9 @@ import BiddingMarketplacePlumber from './pages/BiddingMarketplacePlumber';
 import MobileJobWorkflow from './pages/mobile/MobileJobWorkflow';
 import PlumberAfterSalesClaimsList from './pages/plumber/PlumberAfterSalesClaimsList';
 import PlumberClaimDetail from './pages/plumber/PlumberClaimDetail';
+import PlumberPaymentsDashboard from './pages/plumber/PlumberPaymentsDashboard';
 import AdminClaimArbitrationPage from './pages/admin/AdminClaimArbitrationPage';
+import AdminPaymentManagement from './pages/admin/AdminPaymentManagement';
 
 // Suppress Figma Make internal errors - IMMEDIATELY on module load
 (function() {
@@ -453,11 +455,21 @@ function AppRoutes() {
             <PlumberClaimDetail />
           </RoleProtectedRoute>
         } />
+        <Route path="plumber/payments" element={
+          <RoleProtectedRoute allowedRoles={['super-admin', 'division-head', 'operations-manager', 'admin', 'dispatcher', 'technician']}>
+            <PlumberPaymentsDashboard />
+          </RoleProtectedRoute>
+        } />
 
         {/* GROUPE LAFRANCE APP - Admin routes */}
         <Route path="admin/aftersales/:claimId" element={
           <RoleProtectedRoute allowedRoles={['super-admin', 'admin']}>
             <AdminClaimArbitrationPage />
+          </RoleProtectedRoute>
+        } />
+        <Route path="admin/payments" element={
+          <RoleProtectedRoute allowedRoles={['super-admin', 'admin']}>
+            <AdminPaymentManagement />
           </RoleProtectedRoute>
         } />
 

@@ -377,6 +377,89 @@ Follow instructions in `GITHUB_SETUP_INSTRUCTIONS.md` to push to GitHub.
 - **Routes Added:** 4
 - **Features:** Complete after-sales service lifecycle
 
+### Session 4 - January 20, 2026 (Late Evening)
+
+**Completed:**
+- ✅ Implemented complete 75%/25% payment split system
+  - payment.ts type definitions with comprehensive interfaces
+    - PaymentSplit with status tracking
+    - ComplianceDocument tracking with 5 document types
+    - PaymentSplitSummary for dashboard stats
+    - Payment split calculation functions
+    - Compliance penalty calculation (10% of held amount)
+    - Release conditions checker with detailed blockers
+  - PaymentSplitCard component
+    - Visual payment breakdown (75% immediate, 25% held)
+    - Progress bar visualization
+    - Compliance status display
+    - After-sales hold indicators
+    - Penalty display
+    - Release countdown timer
+    - Detailed conditions breakdown
+  - ComplianceDocumentManager component
+    - Document upload interface
+    - Required/optional document separation
+    - Expiry tracking with warnings (30-day reminder)
+    - Status indicators (valid, expiring, expired, missing)
+    - Renewal reminders
+    - Overall compliance status banner
+    - Document history tracking
+  - PlumberPaymentsDashboard page
+    - Payment summary cards (earned, paid, pending, penalties)
+    - Three-tab interface (Pending, Completed, Compliance)
+    - Document management integration
+    - Real-time compliance status
+    - Payment release conditions display
+  - AdminPaymentManagement page
+    - All payments overview
+    - Releasable/Blocked/Completed categorization
+    - Manual payment release capability
+    - Compliance enforcement
+    - Search and filter functionality
+    - Bulk operations interface
+
+**Business Logic Implemented:**
+- 75% immediate payment upon job completion
+- 25% held for 30 days
+- Automatic compliance checks before release
+- 10% penalty on held amount if non-compliant
+- 7-day grace period for document renewal
+- After-sales claim integration (blocks release)
+- Payment status tracking through entire lifecycle
+- Compliance document requirements:
+  - RBQ (required)
+  - CNESST (required)
+  - CCQ (optional, depends on plumber type)
+  - Revenu Québec taxes (required)
+  - Liability Insurance (required)
+
+**Routes Added:**
+- `/plumber/payments` - Plumber payments dashboard
+- `/admin/payments` - Admin payment management
+
+**Type Definitions:**
+- PaymentStatus enum (8 states)
+- ComplianceStatus enum (4 states)
+- ComplianceDocumentType enum (5 types)
+- Complete payment split interfaces
+- Release conditions interface
+
+### Files Created in Session 4
+
+- `src/app/types/payment.ts` (~220 lines)
+- `src/app/components/payment/PaymentSplitCard.tsx` (~350 lines)
+- `src/app/components/payment/ComplianceDocumentManager.tsx` (~400 lines)
+- `src/app/pages/plumber/PlumberPaymentsDashboard.tsx` (~380 lines)
+- `src/app/pages/admin/AdminPaymentManagement.tsx` (~450 lines)
+
+### Statistics - Session 4
+
+- **Lines of Code Added:** ~1,800
+- **Components Created:** 2
+- **Pages Created:** 2
+- **Routes Added:** 2
+- **Features:** Complete payment split and compliance system
+
 ---
 
-**Last Updated:** January 20, 2026 20:00 EST
+**Last Updated:** January 20, 2026 22:00 EST
