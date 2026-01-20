@@ -550,10 +550,18 @@ function AppRoutes() {
 
 export default function App() {
   useEffect(() => {
-    registerServiceWorker();
-    setupPWAInstallPrompt();
-    setupNetworkStatusListeners();
+    console.log("App component mounted");
+    try {
+      registerServiceWorker();
+      setupPWAInstallPrompt();
+      setupNetworkStatusListeners();
+      console.log("App initialization complete");
+    } catch (error) {
+      console.error("Error in App useEffect:", error);
+    }
   }, []);
+
+  console.log("App component rendering");
 
   return (
     <ErrorBoundary>
