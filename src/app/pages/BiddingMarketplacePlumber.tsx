@@ -9,6 +9,7 @@ import {
   Search,
   CheckCircle,
   Timer,
+  Home,
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
@@ -21,8 +22,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { toast } from 'sonner';
 import { JobUrgency } from '../types/bidding';
 import { mockDataService } from '../services/mockDataService';
+import { useBETAuth } from '../context/BETAuthContext';
+import { isPlumber } from '../types/betUser';
+import { useNavigate } from 'react-router-dom';
 
 export default function BiddingMarketplacePlumber() {
+  const { user } = useBETAuth();
+  const navigate = useNavigate();
   const [jobs, setJobs] = useState<any[]>([]);
   const [selectedJob, setSelectedJob] = useState<any | null>(null);
   const [bidAmount, setBidAmount] = useState('');
@@ -34,8 +40,10 @@ export default function BiddingMarketplacePlumber() {
   const [myBids, setMyBids] = useState<Set<string>>(new Set());
   const [currentTime, setCurrentTime] = useState(Date.now());
 
-  // Mock plumber location (in production, get from GPS)
-  const plumberLocation = { lat: 45.5017, lng: -73.5673 }; // Montreal center
+  // Get plumber location from BET user profile
+  const plumberLocation = isPlumber(user)
+    ? user.coordinates
+    : { lat: 45.5017, lng: -73.5673 }; // Fallback to Montreal center
 
   useEffect(() => {
     loadJobs();
@@ -141,8 +149,8 @@ export default function BiddingMarketplacePlumber() {
       assignedAt: new Date(),
     });
 
-    // Notify winner
-    if (winningBid.plumberId === 'plumber-1') {
+    // Notify winner (check if current plumber won)
+    if (user && isPlumber(user) && winningBid.plumberId === user.id) {
       // This plumber won
       toast.success(`Félicitations! Vous avez remporté le job ${jobId}!`, {
         duration: 10000,
@@ -204,11 +212,20 @@ export default function BiddingMarketplacePlumber() {
     }
 
     try {
+      // Check if user is logged in as plumber
+      if (!user || !isPlumber(user)) {
+        toast.error('Vous devez être connecté en tant que plombier');
+        navigate('/bet-login');
+        return;
+      }
+
       // Create bid object
       const bid = {
         id: `BID-${Date.now()}`,
         jobId: selectedJob.id,
-        plumberId: 'plumber-1', // Would come from auth context
+        plumberId: user.id, // Use actual plumber ID from BET auth
+        plumberName: `${user.firstName} ${user.lastName}`,
+        businessName: user.businessName,
         amount,
         estimatedDuration: parseInt(bidDuration),
         message: bidMessage,
@@ -378,6 +395,22 @@ export default function BiddingMarketplacePlumber() {
   return (
     <div className="container mx-auto py-8 px-4">
       <div className="mb-8">
+        <div className="flex items-center justify-between mb-4">
+          <Button
+            variant="outline"
+            onClick={() => navigate('/plumber-dashboard')}
+            className="flex items-center space-x-2"
+          >
+            <Home className="w-4 h-4" />
+            <span>Retour au tableau de bord</span>
+          </Button>
+          {user && isPlumber(user) && (
+            <div className="text-right">
+              <p className="font-medium text-gray-900">{user.businessName}</p>
+              <p className="text-sm text-gray-600">{user.firstName} {user.lastName}</p>
+            </div>
+          )}
+        </div>
         <h1 className="text-4xl font-bold text-gray-900 mb-2">Marché des soumissions (BET)</h1>
         <p className="text-lg text-gray-600">
           Consultez les appels de service disponibles et soumissionnez

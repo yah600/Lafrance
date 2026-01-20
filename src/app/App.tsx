@@ -69,6 +69,11 @@ import AdminReviewQueue from './pages/admin/AdminReviewQueue';
 import BETLogin from './pages/auth/BETLogin';
 import { PlumberRoute, ClientRoute, AdminRoute } from './components/auth/BETProtectedRoute';
 
+// BET Marketplace Dashboards
+import PlumberDashboard from './pages/bet/PlumberDashboard';
+import ClientDashboard from './pages/bet/ClientDashboard';
+import AdminDashboard from './pages/bet/AdminDashboard';
+
 // Suppress Figma Make internal errors - IMMEDIATELY on module load
 (function() {
   if (typeof window === 'undefined') return;
@@ -262,6 +267,23 @@ function AppRoutes() {
         element={isAuthenticated ? <Navigate to="/" replace /> : <Login />}
       />
       <Route path="/bet-login" element={<BETLogin />} />
+
+      {/* BET Marketplace Dashboards */}
+      <Route path="/plumber-dashboard" element={
+        <PlumberRoute>
+          <PlumberDashboard />
+        </PlumberRoute>
+      } />
+      <Route path="/client-dashboard" element={
+        <ClientRoute>
+          <ClientDashboard />
+        </ClientRoute>
+      } />
+      <Route path="/admin-dashboard" element={
+        <AdminRoute>
+          <AdminDashboard />
+        </AdminRoute>
+      } />
       <Route path="/client-login" element={<ClientLogin />} />
       <Route path="/client-register" element={<ClientRegistration />} />
       <Route path="/plumber-register" element={<PlumberRegistration />} />

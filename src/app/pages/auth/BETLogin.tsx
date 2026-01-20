@@ -7,16 +7,30 @@
  * - Internal Admins (Groupe Lafrance staff)
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BETAuthProvider, useBETAuth } from '../../context/BETAuthContext';
+import { isPlumber, isClient, isInternalAdmin } from '../../types/betUser';
 import { toast } from 'sonner';
 
 function BETLoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { login, isLoading } = useBETAuth();
+  const { user, login, isLoading } = useBETAuth();
   const navigate = useNavigate();
+
+  // Redirect after successful login
+  useEffect(() => {
+    if (user) {
+      if (isPlumber(user)) {
+        navigate('/plumber-dashboard');
+      } else if (isClient(user)) {
+        navigate('/client-dashboard');
+      } else if (isInternalAdmin(user)) {
+        navigate('/admin-dashboard');
+      }
+    }
+  }, [user, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,8 +42,8 @@ function BETLoginForm() {
 
     try {
       await login(email, password);
-      // Navigation is handled by the dashboard redirect logic
-      navigate('/');
+      // Redirect based on user role - handled in useBETAuth after login
+      // Navigation will happen after user state is set
     } catch (error: any) {
       toast.error(error.message || 'Erreur de connexion');
     }
@@ -48,7 +62,7 @@ function BETLoginForm() {
 
     try {
       await login(credentials[role].email, credentials[role].password);
-      navigate('/');
+      // Navigation will be handled by useEffect when user state changes
     } catch (error: any) {
       toast.error(error.message || 'Erreur de connexion');
     }
