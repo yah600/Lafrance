@@ -63,6 +63,7 @@ import PlumberClaimDetail from './pages/plumber/PlumberClaimDetail';
 import PlumberPaymentsDashboard from './pages/plumber/PlumberPaymentsDashboard';
 import AdminClaimArbitrationPage from './pages/admin/AdminClaimArbitrationPage';
 import AdminPaymentManagement from './pages/admin/AdminPaymentManagement';
+import AdminReviewQueue from './pages/admin/AdminReviewQueue';
 
 // Suppress Figma Make internal errors - IMMEDIATELY on module load
 (function() {
@@ -463,6 +464,11 @@ function AppRoutes() {
         } />
 
         {/* GROUPE LAFRANCE APP - Admin routes */}
+        <Route path="admin/review-queue" element={
+          <RoleProtectedRoute allowedRoles={['super-admin', 'admin']}>
+            <AdminReviewQueue />
+          </RoleProtectedRoute>
+        } />
         <Route path="admin/aftersales/:claimId" element={
           <RoleProtectedRoute allowedRoles={['super-admin', 'admin']}>
             <AdminClaimArbitrationPage />

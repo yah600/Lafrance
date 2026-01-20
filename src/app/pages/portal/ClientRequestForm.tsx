@@ -11,6 +11,7 @@ import { Checkbox } from '../../components/ui/checkbox';
 import { Badge } from '../../components/ui/badge';
 import { toast } from 'sonner';
 import { JobUrgency, Language } from '../../types/bidding';
+import { mockDataService } from '../../services/mockDataService';
 
 interface TimeSlot {
   date: string;
@@ -104,7 +105,7 @@ export default function ClientRequestForm() {
     );
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     // Validation
     if (!description.trim()) {
       toast.error('Veuillez décrire votre demande');
@@ -136,9 +137,63 @@ export default function ClientRequestForm() {
       return;
     }
 
-    // Submit request
-    toast.success('Demande soumise! Les plombiers vont bientôt faire leurs offres');
-    navigate('/portal/requests');
+    try {
+      // Convert photos to base64
+      const photoBase64Array: string[] = [];
+      for (const preview of photoPreview) {
+        photoBase64Array.push(preview);
+      }
+
+      // Generate job ID
+      const jobId = `JOB-${Date.now()}`;
+
+      // Simulate geocoding for Montreal (in production, use real geocoding API)
+      const coordinates = {
+        lat: 45.5017 + (Math.random() - 0.5) * 0.1,
+        lng: -73.5673 + (Math.random() - 0.5) * 0.1,
+      };
+
+      // Calculate bidding times
+      const now = new Date();
+      const biddingDuration = urgency === JobUrgency.URGENT ? 5 * 60 * 1000 : 2 * 60 * 60 * 1000;
+      const biddingEndTime = new Date(now.getTime() + biddingDuration);
+
+      // Create job object
+      const job = {
+        id: jobId,
+        clientId: 'client-1', // Would come from auth context in production
+        description: reformulatedDescription || description,
+        originalDescription: description,
+        address,
+        coordinates,
+        urgency,
+        languagePreference,
+        photos: photoBase64Array,
+        timeSlots: urgency === JobUrgency.NORMAL ? timeSlots : [],
+        status: 'pending_review', // Admin must approve first
+        createdAt: now,
+        biddingStartTime: null, // Will be set when admin approves
+        biddingEndTime: null,
+        estimatedPrice: getUrgencyPrice(),
+        paymentPreauthorized: true,
+        cardLast4: cardNumber.slice(-4),
+      };
+
+      // Save to mockDataService
+      mockDataService.addJob(job);
+
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 1500));
+
+      toast.success('Demande soumise avec succès!');
+      toast.info('Votre demande est en cours de révision par notre équipe');
+
+      // Navigate to success page (or job tracking page)
+      navigate(`/portal/job/${jobId}`);
+    } catch (error) {
+      console.error('Error submitting job:', error);
+      toast.error('Erreur lors de la soumission. Veuillez réessayer.');
+    }
   };
 
   const getUrgencyPrice = () => {
