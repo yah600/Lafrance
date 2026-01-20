@@ -76,6 +76,18 @@ function randomPick<T>(array: T[]): T {
 }
 
 /**
+ * Generate a random alphanumeric string
+ */
+function randomString(length: number): string {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let result = '';
+  for (let i = 0; i < length; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+}
+
+/**
  * Generate a random Montreal coordinate
  * Montreal center: 45.5017° N, -73.5673° W
  * ±20km radius
