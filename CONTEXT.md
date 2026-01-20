@@ -806,4 +806,113 @@ The following remain for production deployment:
 
 ---
 
-**Last Updated:** January 20, 2026 (Session 7 - Phase 1 Complete)
+---
+
+### Session 8 - January 20, 2026 (Phase 2: BET Bidding System)
+
+**Completed:**
+- ✅ Updated ClientRequestForm to persist data via mockDataService
+  - Convert photos to base64 for localStorage
+  - Generate unique job IDs
+  - Simulate geocoding for Montreal coordinates
+  - Calculate bidding times (5min urgent, 2 hours normal)
+  - Create job with status: 'pending_review'
+  - Navigate to job tracking page after submission
+
+- ✅ Created AdminReviewQueue page (~450 lines)
+  - List all jobs with status: 'pending_review'
+  - Sort by urgency and submission time
+  - Statistics dashboard (pending, urgent, avg time)
+  - Job detail view with photos
+  - Mock chat system with client
+  - Approve button → transitions to 'in_bet' status
+  - Reject button → transitions to 'cancelled' status
+  - Admin notes and rejection reasons
+  - Real-time updates every 10 seconds
+
+- ✅ Rebuilt BiddingMarketplacePlumber with real logic (~630 lines)
+  - Load jobs from mockDataService (status: 'in_bet')
+  - Real countdown timer (updates every second)
+  - Visual time remaining with color coding:
+    - Last minute: Red bold with pulse animation
+    - Last 5 minutes: Orange bold
+    - Normal: Gray
+  - Geolocation filtering:
+    - Urgent jobs: 50km radius only
+    - Normal jobs: Unlimited radius
+  - Haversine distance calculation
+  - Distance display on each job card
+  - Bid submission saves to mockDataService
+  - Jobs stay visible after bidding (show "Offre soumise" badge)
+  - Auto-select winner when timer expires:
+    - Lowest bid wins
+    - Update job status to 'assigned'
+    - Notify winner with toast + sound
+    - If no bids: Cancel job
+  - Sound alerts for new urgent jobs (every 30 seconds)
+  - Refresh jobs every 5 seconds
+  - Check expired bids every 10 seconds
+  - Search and filter functionality
+  - Photo display (first 3 with count)
+
+**Business Logic Implemented:**
+```typescript
+// Urgent Jobs
+- Bidding duration: 5 minutes
+- Distance filter: 50km radius
+- Must arrive within 1 hour after winning
+- Sound alerts enabled
+
+// Normal Jobs
+- Bidding duration: 2 hours
+- Distance filter: Unlimited
+- Time slot selection required
+- Scheduled arrival
+
+// Winner Selection
+- Automatic when timer expires
+- Selects lowest bid
+- Updates job status: 'in_bet' → 'assigned'
+- Stores winnerId and winningBid
+- Notifies winner via toast
+
+// No Bids
+- Job cancelled automatically
+- Reason: "Aucune offre reçue"
+```
+
+**Routes Added:**
+- `/admin/review-queue` - Admin job approval interface
+
+**Complete Workflow Now Functional:**
+1. Client submits request → status: 'pending_review'
+2. Admin approves → status: 'in_bet' (bidding starts)
+3. Plumbers see job in marketplace (filtered by distance)
+4. Plumbers submit bids (saved to mockDataService)
+5. Timer expires → Lowest bid wins
+6. Job status: 'in_bet' → 'assigned'
+7. Winner notified
+
+### Files Created/Modified in Session 8
+
+**Created:**
+- `src/app/pages/admin/AdminReviewQueue.tsx` (~450 lines)
+
+**Modified:**
+- `src/app/pages/portal/ClientRequestForm.tsx` (added persistence logic)
+- `src/app/pages/BiddingMarketplacePlumber.tsx` (complete rewrite with real logic)
+- `src/app/App.tsx` (added AdminReviewQueue route)
+
+### Statistics - Session 8
+
+- **Lines of Code Added/Modified:** ~1,640
+- **Pages Created:** 1 (AdminReviewQueue)
+- **Pages Updated:** 2 (ClientRequestForm, BiddingMarketplacePlumber)
+- **Routes Added:** 1
+- **Features:** Complete BET bidding workflow
+- **Real-time Updates:** 3 intervals (jobs, time, expiry)
+- **Geolocation:** Haversine formula for distance
+
+---
+
+**Last Updated:** January 20, 2026 (Session 8 - Phase 2 Complete)
