@@ -54,8 +54,12 @@ import ContractorBids from './pages/ContractorBids';
 import PlumberRegistration from './pages/auth/PlumberRegistration';
 import ClientRequestForm from './pages/portal/ClientRequestForm';
 import ClientInvoiceView from './pages/portal/ClientInvoiceView';
+import ClientAfterSalesService from './pages/portal/ClientAfterSalesService';
 import BiddingMarketplacePlumber from './pages/BiddingMarketplacePlumber';
 import MobileJobWorkflow from './pages/mobile/MobileJobWorkflow';
+import PlumberAfterSalesClaimsList from './pages/plumber/PlumberAfterSalesClaimsList';
+import PlumberClaimDetail from './pages/plumber/PlumberClaimDetail';
+import AdminClaimArbitrationPage from './pages/admin/AdminClaimArbitrationPage';
 
 // Suppress Figma Make internal errors - IMMEDIATELY on module load
 (function() {
@@ -439,6 +443,23 @@ function AppRoutes() {
             <BiddingMarketplacePlumber />
           </RoleProtectedRoute>
         } />
+        <Route path="plumber/aftersales" element={
+          <RoleProtectedRoute allowedRoles={['super-admin', 'division-head', 'operations-manager', 'admin', 'dispatcher', 'technician']}>
+            <PlumberAfterSalesClaimsList />
+          </RoleProtectedRoute>
+        } />
+        <Route path="plumber/aftersales/:claimId" element={
+          <RoleProtectedRoute allowedRoles={['super-admin', 'division-head', 'operations-manager', 'admin', 'dispatcher', 'technician']}>
+            <PlumberClaimDetail />
+          </RoleProtectedRoute>
+        } />
+
+        {/* GROUPE LAFRANCE APP - Admin routes */}
+        <Route path="admin/aftersales/:claimId" element={
+          <RoleProtectedRoute allowedRoles={['super-admin', 'admin']}>
+            <AdminClaimArbitrationPage />
+          </RoleProtectedRoute>
+        } />
 
         {/* GROUPE LAFRANCE APP - Client routes */}
         <Route path="client-request" element={<ClientRequestForm />} />
@@ -451,6 +472,7 @@ function AppRoutes() {
 
       {/* Customer Portal Routes */}
       <Route path="/portal/invoice/:invoiceId" element={<ClientInvoiceView />} />
+      <Route path="/portal/aftersales/:invoiceId" element={<ClientAfterSalesService />} />
       <Route path="/portal/*" element={<CustomerPortal />} />
       <Route path="/client-portal/*" element={<ClientPortalMain />} />
 
