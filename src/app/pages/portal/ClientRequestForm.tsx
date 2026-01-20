@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Camera, CreditCard, MapPin, Clock, AlertTriangle, Upload, X, Loader2 } from 'lucide-react';
+import { Camera, CreditCard, MapPin, Clock, AlertTriangle, Upload, X, Loader2, Home } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
 import { Input } from '../../components/ui/input';
@@ -12,6 +12,8 @@ import { Badge } from '../../components/ui/badge';
 import { toast } from 'sonner';
 import { JobUrgency, Language } from '../../types/bidding';
 import { mockDataService } from '../../services/mockDataService';
+import { useBETAuth } from '../../context/BETAuthContext';
+import { isClient } from '../../types/betUser';
 
 interface TimeSlot {
   date: string;
@@ -20,6 +22,7 @@ interface TimeSlot {
 }
 
 export default function ClientRequestForm() {
+  const { user } = useBETAuth();
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -138,6 +141,13 @@ export default function ClientRequestForm() {
     }
 
     try {
+      // Check if user is logged in as client
+      if (!user || !isClient(user)) {
+        toast.error('Vous devez être connecté en tant que client');
+        navigate('/bet-login');
+        return;
+      }
+
       // Convert photos to base64
       const photoBase64Array: string[] = [];
       for (const preview of photoPreview) {
@@ -147,8 +157,8 @@ export default function ClientRequestForm() {
       // Generate job ID
       const jobId = `JOB-${Date.now()}`;
 
-      // Simulate geocoding for Montreal (in production, use real geocoding API)
-      const coordinates = {
+      // Use client's address if available, otherwise use entered address
+      const coordinates = user.address?.coordinates || {
         lat: 45.5017 + (Math.random() - 0.5) * 0.1,
         lng: -73.5673 + (Math.random() - 0.5) * 0.1,
       };
@@ -161,7 +171,10 @@ export default function ClientRequestForm() {
       // Create job object
       const job = {
         id: jobId,
-        clientId: 'client-1', // Would come from auth context in production
+        clientId: user.id, // Use actual client ID from BET auth
+        clientName: `${user.firstName} ${user.lastName}`,
+        clientEmail: user.email,
+        clientPhone: user.phone
         description: reformulatedDescription || description,
         originalDescription: description,
         address,
@@ -212,6 +225,17 @@ export default function ClientRequestForm() {
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4">
       <div className="max-w-4xl mx-auto">
+        <div className="mb-6">
+          <Button
+            variant="outline"
+            onClick={() => navigate('/client-dashboard')}
+            className="flex items-center space-x-2"
+          >
+            <Home className="w-4 h-4" />
+            <span>Retour au tableau de bord</span>
+          </Button>
+        </div>
+
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">
             Nouvelle demande de service
@@ -219,6 +243,11 @@ export default function ClientRequestForm() {
           <p className="text-lg text-gray-600">
             Décrivez votre problème et recevez des offres de plombiers qualifiés
           </p>
+          {user && isClient(user) && (
+            <p className="text-sm text-gray-500 mt-2">
+              Demandeur: {user.firstName} {user.lastName} ({user.email})
+            </p>
+          )}
         </div>
 
         {/* Urgency Selection */}

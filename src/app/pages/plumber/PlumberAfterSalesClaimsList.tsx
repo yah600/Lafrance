@@ -1,11 +1,14 @@
-import React, { useState } from 'react';
-import { AlertCircle, Clock, CheckCircle, XCircle, ChevronRight } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { AlertCircle, Clock, CheckCircle, XCircle, ChevronRight, Home } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
 import { Badge } from '../../components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../components/ui/tabs';
 import { Button } from '../../components/ui/button';
 import { AfterSalesPriority, AfterSalesClaimType } from '../../types/aftersales';
+import { useBETAuth } from '../../context/BETAuthContext';
+import { isPlumber } from '../../types/betUser';
+import { mockDataService } from '../../services/mockDataService';
 
 // Mock claims data
 const mockClaims = [
@@ -69,17 +72,26 @@ const mockClaims = [
 ];
 
 export default function PlumberAfterSalesClaimsList() {
+  const { user } = useBETAuth();
   const navigate = useNavigate();
-  const [claims] = useState(mockClaims);
+  const [claims, setClaims] = useState<any[]>([]);
 
-  const pendingClaims = claims.filter((c) => c.status === 'pending');
-  const acceptedClaims = claims.filter((c) => c.status === 'accepted');
+  useEffect(() => {
+    if (user && isPlumber(user)) {
+      // Load claims for this plumber from mockDataService
+      const plumberClaims = mockDataService.getClaimsByPlumber(user.id);
+      setClaims(plumberClaims.length > 0 ? plumberClaims : mockClaims); // Fallback to mock if empty
+    }
+  }, [user]);
+
+  const pendingClaims = claims.filter((c) => c.status === 'pending' || c.status === 'submitted');
+  const acceptedClaims = claims.filter((c) => c.status === 'accepted' || c.status === 'awaiting_client_selection');
   const disputedClaims = claims.filter((c) => c.status === 'disputed');
-  const urgentClaims = pendingClaims.filter((c) => c.priority === AfterSalesPriority.URGENT);
+  const urgentClaims = pendingClaims.filter((c) => c.priority === AfterSalesPriority.URGENT || c.priority === 'urgent');
 
   const totalHoldAmount = claims
-    .filter((c) => c.status !== 'resolved')
-    .reduce((sum, c) => sum + c.holdAmount, 0);
+    .filter((c) => c.status !== 'resolved' && c.status !== 'closed')
+    .reduce((sum, c) => sum + (c.holdAmount || 0), 0);
 
   const getTypeLabel = (type: AfterSalesClaimType): string => {
     switch (type) {

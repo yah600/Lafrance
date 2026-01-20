@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
-import { DollarSign, TrendingUp, Clock, AlertCircle, FileText } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { DollarSign, TrendingUp, Clock, AlertCircle, FileText, Home } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../components/ui/tabs';
+import { Button } from '../../components/ui/button';
 import { PaymentSplitCard } from '../../components/payment/PaymentSplitCard';
 import { ComplianceDocumentManager } from '../../components/payment/ComplianceDocumentManager';
 import {
@@ -12,6 +14,9 @@ import {
   ComplianceDocumentType,
   PaymentSplitSummary,
 } from '../../types/payment';
+import { useBETAuth } from '../../context/BETAuthContext';
+import { isPlumber } from '../../types/betUser';
+import { mockDataService } from '../../services/mockDataService';
 
 // Mock payment splits data
 const mockPaymentSplits: PaymentSplit[] = [
@@ -128,8 +133,19 @@ const mockComplianceDocuments: ComplianceDocument[] = [
 ];
 
 export default function PlumberPaymentsDashboard() {
-  const [splits] = useState<PaymentSplit[]>(mockPaymentSplits);
+  const { user } = useBETAuth();
+  const navigate = useNavigate();
+  const [splits, setSplits] = useState<PaymentSplit[]>([]);
   const [documents, setDocuments] = useState<ComplianceDocument[]>(mockComplianceDocuments);
+
+  useEffect(() => {
+    if (user && isPlumber(user)) {
+      // Load real payment payouts for this plumber
+      const payouts = mockDataService.getPlumberPayouts(user.id);
+      // For now, use mock data if no real payouts exist
+      setSplits(payouts.length > 0 ? payouts : mockPaymentSplits);
+    }
+  }, [user]);
 
   // Calculate summary
   const summary: PaymentSplitSummary = {

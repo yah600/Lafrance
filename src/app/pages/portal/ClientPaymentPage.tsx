@@ -7,6 +7,8 @@ import { PaymentMethodSelector } from '../../components/payment/PaymentMethodSel
 import { PaymentResult } from '../../services/paymentService';
 import { mockDataService } from '../../services/mockDataService';
 import { toast } from 'sonner';
+import { useBETAuth } from '../../context/BETAuthContext';
+import { isClient } from '../../types/betUser';
 
 interface PaymentPageState {
   amount: number;
@@ -19,6 +21,7 @@ interface PaymentPageState {
 }
 
 export default function ClientPaymentPage() {
+  const { user } = useBETAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const state = location.state as PaymentPageState;
@@ -325,7 +328,7 @@ export default function ClientPaymentPage() {
           amount={amount}
           invoiceId={invoiceId}
           jobId={jobId}
-          clientId="CLIENT-001" // In production: Get from auth context
+          clientId={user && isClient(user) ? user.id : 'GUEST'} // Use actual client ID from BET auth
           recipientEmail={plumberEmail || 'paiements@groupelafrance.ca'}
           recipientName={plumberName || 'Groupe Lafrance'}
           onSuccess={handlePaymentSuccess}

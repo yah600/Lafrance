@@ -10,6 +10,7 @@ import {
   MessageSquare,
   Image as ImageIcon,
   DollarSign,
+  Home,
 } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
@@ -18,8 +19,11 @@ import { Textarea } from '../../components/ui/textarea';
 import { toast } from 'sonner';
 import { mockDataService } from '../../services/mockDataService';
 import { JobUrgency } from '../../types/bidding';
+import { useBETAuth } from '../../context/BETAuthContext';
+import { isInternalAdmin } from '../../types/betUser';
 
 export default function AdminReviewQueue() {
+  const { user } = useBETAuth();
   const navigate = useNavigate();
   const [pendingJobs, setPendingJobs] = useState<any[]>([]);
   const [selectedJob, setSelectedJob] = useState<any>(null);
@@ -41,6 +45,13 @@ export default function AdminReviewQueue() {
 
   const handleApprove = async (job: any) => {
     try {
+      // Check if user is admin
+      if (!user || !isInternalAdmin(user)) {
+        toast.error('Vous devez être connecté en tant qu\'administrateur');
+        navigate('/bet-login');
+        return;
+      }
+
       // Calculate bidding times
       const now = new Date();
       const biddingDuration = job.urgency === JobUrgency.URGENT ? 5 * 60 * 1000 : 2 * 60 * 60 * 1000;
@@ -52,7 +63,8 @@ export default function AdminReviewQueue() {
         biddingStartTime: now,
         biddingEndTime,
         adminNote,
-        approvedBy: 'admin-1', // Would come from auth context
+        approvedBy: user.id, // Use actual admin ID from BET auth
+        approvedByName: `${user.firstName} ${user.lastName}`,
         approvedAt: now,
       });
 
@@ -80,11 +92,19 @@ export default function AdminReviewQueue() {
       return;
     }
 
+    // Check if user is admin
+    if (!user || !isInternalAdmin(user)) {
+      toast.error('Vous devez être connecté en tant qu\'administrateur');
+      navigate('/bet-login');
+      return;
+    }
+
     try {
       const updated = mockDataService.updateJob(job.id, {
         status: 'cancelled',
         cancelReason: adminNote,
-        cancelledBy: 'admin-1',
+        cancelledBy: user.id, // Use actual admin ID
+        cancelledByName: `${user.firstName} ${user.lastName}`,
         cancelledAt: new Date(),
       });
 
@@ -149,6 +169,17 @@ export default function AdminReviewQueue() {
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-7xl mx-auto">
+        <div className="mb-6">
+          <Button
+            variant="outline"
+            onClick={() => navigate('/admin-dashboard')}
+            className="flex items-center space-x-2"
+          >
+            <Home className="w-4 h-4" />
+            <span>Retour au tableau de bord</span>
+          </Button>
+        </div>
+
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
             <ClipboardCheck className="h-8 w-8 text-primary" />
@@ -157,6 +188,11 @@ export default function AdminReviewQueue() {
           <p className="text-gray-600 mt-2">
             Approuvez ou rejetez les demandes de service des clients
           </p>
+          {user && isInternalAdmin(user) && (
+            <p className="text-sm text-gray-500 mt-2">
+              Administrateur: {user.firstName} {user.lastName} - {user.title}
+            </p>
+          )}
         </div>
 
         {/* Statistics */}

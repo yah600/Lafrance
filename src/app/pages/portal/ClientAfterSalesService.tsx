@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, CheckCircle, Clock, AlertCircle } from 'lucide-react';
+import { ArrowLeft, CheckCircle, Clock, AlertCircle, Home } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
 import { Badge } from '../../components/ui/badge';
@@ -7,8 +7,11 @@ import { AfterSalesClaimForm } from '../../components/aftersales/AfterSalesClaim
 import { Button } from '../../components/ui/button';
 import { mockDataService } from '../../services/mockDataService';
 import { toast } from 'sonner';
+import { useBETAuth } from '../../context/BETAuthContext';
+import { isClient } from '../../types/betUser';
 
 export default function ClientAfterSalesService() {
+  const { user } = useBETAuth();
   const navigate = useNavigate();
   const { invoiceId } = useParams();
   const [claimSubmitted, setClaimSubmitted] = useState(false);
@@ -47,13 +50,22 @@ export default function ClientAfterSalesService() {
   const handleClaimSubmit = (claim: any) => {
     console.log('Claim submitted:', claim);
 
+    // Check if user is logged in as client
+    if (!user || !isClient(user)) {
+      toast.error('Vous devez être connecté en tant que client');
+      navigate('/bet-login');
+      return;
+    }
+
     // Save claim to mockDataService
     const fullClaim = {
       ...claim,
       id: `CLAIM-${Date.now()}`,
       invoiceId,
       jobId: job?.id,
-      clientId: job?.clientId || 'client-1',
+      clientId: user.id, // Use actual client ID from BET auth
+      clientName: `${user.firstName} ${user.lastName}`,
+      clientEmail: user.email,
       plumberId: job?.plumberId || job?.winnerId,
       status: 'submitted',
       submittedAt: new Date(),
