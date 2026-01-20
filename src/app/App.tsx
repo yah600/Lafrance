@@ -55,6 +55,7 @@ import PlumberRegistration from './pages/auth/PlumberRegistration';
 import ClientRequestForm from './pages/portal/ClientRequestForm';
 import ClientInvoiceView from './pages/portal/ClientInvoiceView';
 import ClientAfterSalesService from './pages/portal/ClientAfterSalesService';
+import ClientPaymentPage from './pages/portal/ClientPaymentPage';
 import BiddingMarketplacePlumber from './pages/BiddingMarketplacePlumber';
 import MobileJobWorkflow from './pages/mobile/MobileJobWorkflow';
 import PlumberAfterSalesClaimsList from './pages/plumber/PlumberAfterSalesClaimsList';
@@ -485,6 +486,7 @@ function AppRoutes() {
       {/* Customer Portal Routes */}
       <Route path="/portal/invoice/:invoiceId" element={<ClientInvoiceView />} />
       <Route path="/portal/aftersales/:invoiceId" element={<ClientAfterSalesService />} />
+      <Route path="/portal/payment" element={<ClientPaymentPage />} />
       <Route path="/portal/*" element={<CustomerPortal />} />
       <Route path="/client-portal/*" element={<ClientPortalMain />} />
 
