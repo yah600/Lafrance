@@ -174,7 +174,7 @@ export default function ClientRequestForm() {
         clientId: user.id, // Use actual client ID from BET auth
         clientName: `${user.firstName} ${user.lastName}`,
         clientEmail: user.email,
-        clientPhone: user.phone
+        clientPhone: user.phone,
         description: reformulatedDescription || description,
         originalDescription: description,
         address,
