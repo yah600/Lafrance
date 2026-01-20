@@ -597,39 +597,7 @@ export class MockDataService {
     return `JOB-${Date.now()}-${Math.random().toString(36).substring(2, 9).toUpperCase()}`;
   }
 
-  // ============================================
-  // PAYMENTS & PAYOUTS
-  // ============================================
-
-  addPayment(payment: any) {
-    const payments = this.getAllPayments();
-    payments.push({
-      ...payment,
-      id: payment.id || `PAY-${Date.now()}`,
-      createdAt: payment.createdAt || new Date(),
-    });
-    StorageService.set(KEYS.PAYMENTS, payments);
-  }
-
-  getAllPayments() {
-    return StorageService.get<any[]>(KEYS.PAYMENTS) || [];
-  }
-
-  getPaymentByJobId(jobId: string) {
-    const payments = this.getAllPayments();
-    return payments.find(p => p.jobId === jobId);
-  }
-
-  updatePayment(id: string, updates: any) {
-    const payments = this.getAllPayments();
-    const index = payments.findIndex(p => p.id === id);
-    if (index === -1) return null;
-
-    payments[index] = { ...payments[index], ...updates, updatedAt: new Date() };
-    StorageService.set(KEYS.PAYMENTS, payments);
-    return payments[index];
-  }
-
+  // Plumber payout methods (added to support payment split)
   addPlumberPayout(payout: any) {
     const payouts = StorageService.get<any[]>('plumberPayouts') || [];
     payouts.push({
@@ -646,11 +614,6 @@ export class MockDataService {
       return payouts.filter(p => p.plumberId === plumberId);
     }
     return payouts;
-  }
-
-  getHeldPayments(plumberId: string) {
-    const payouts = this.getPlumberPayouts(plumberId);
-    return payouts.filter(p => p.status === 'held' && p.type === 'held_25');
   }
 
   releaseHeldPayment(payoutId: string) {
@@ -679,44 +642,6 @@ export class MockDataService {
     };
     StorageService.set('plumberPayouts', payouts);
     return payouts[index];
-  }
-
-  // ============================================
-  // AFTER-SALES CLAIMS
-  // ============================================
-
-  addClaim(claim: any) {
-    const claims = this.getAllClaims();
-    claims.push({
-      ...claim,
-      id: claim.id || `CLAIM-${Date.now()}`,
-      createdAt: claim.createdAt || new Date(),
-    });
-    StorageService.set(KEYS.AFTERSALES_CLAIMS, claims);
-  }
-
-  getAllClaims() {
-    return StorageService.get<any[]>(KEYS.AFTERSALES_CLAIMS) || [];
-  }
-
-  getClaimsByJobId(jobId: string) {
-    const claims = this.getAllClaims();
-    return claims.filter(c => c.jobId === jobId);
-  }
-
-  getClaimsByPlumber(plumberId: string) {
-    const claims = this.getAllClaims();
-    return claims.filter(c => c.plumberId === plumberId);
-  }
-
-  updateClaim(claimId: string, updates: any) {
-    const claims = this.getAllClaims();
-    const index = claims.findIndex(c => c.id === claimId);
-    if (index === -1) return null;
-
-    claims[index] = { ...claims[index], ...updates, updatedAt: new Date() };
-    StorageService.set(KEYS.AFTERSALES_CLAIMS, claims);
-    return claims[index];
   }
 
   /**
