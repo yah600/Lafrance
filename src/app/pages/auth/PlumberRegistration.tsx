@@ -14,6 +14,7 @@ import { toast } from 'sonner';
 import { SubscriptionTier } from '../../types/subscription';
 import { SubscriptionTierCard } from '../../components/subscription/SubscriptionTierCard';
 import { Language } from '../../types/bidding';
+import { mockDataService } from '../../services/mockDataService';
 
 interface RegistrationData {
   // Step 1: Subscription
@@ -142,9 +143,94 @@ export default function PlumberRegistration() {
   };
 
   const handleSubmit = () => {
-    // Submit registration
-    toast.success('Inscription réussie! Bienvenue sur GROUPE LAFRANCE APP');
-    navigate('/dashboard');
+    // Generate unique plumber ID
+    const plumberId = `PLB-${Date.now()}`;
+
+    // Generate Montreal coordinates
+    const centerLat = 45.5017;
+    const centerLng = -73.5673;
+    const lat = centerLat + (Math.random() - 0.5) * 0.1;
+    const lng = centerLng + (Math.random() - 0.5) * 0.1;
+
+    // Create plumber profile
+    const plumber = {
+      id: plumberId,
+      userId: `USER-${Date.now()}`,
+      firstName: formData.ownerName.split(' ')[0],
+      lastName: formData.ownerName.split(' ').slice(1).join(' ') || formData.ownerName,
+      businessName: formData.legalBusinessName,
+      operatingName: formData.operatingName || formData.legalBusinessName,
+      email: formData.email,
+      phone: formData.phone,
+      rbqNumber: formData.rbqNumber,
+      taxNumber: formData.taxNumber,
+      coordinates: { lat, lng },
+      address: formData.businessAddress,
+      subscription: {
+        tier: formData.subscriptionTier,
+        billingCycle: formData.billingCycle,
+        status: 'trial',
+        startDate: new Date(),
+        trialEndDate: new Date(Date.now() + 180 * 24 * 60 * 60 * 1000), // 6 months
+      },
+      preferences: {
+        acceptUrgentJobs: formData.acceptUrgentJobs,
+        workingHours: {
+          start: formData.workingHoursStart,
+          end: formData.workingHoursEnd,
+        },
+        serviceTypes: formData.serviceTypes,
+        serviceRadius: formData.serviceRadius,
+        languages: formData.languages,
+      },
+      complianceStatus: {
+        isCompliant: false,
+        documents: {
+          RBQ: { status: 'provided', expiryDate: formData.rbqExpiry },
+          CNESST: { status: 'pending', expiryDate: null },
+          CCQ: { status: 'pending', expiryDate: null },
+          RQ: { status: 'pending', expiryDate: null },
+          liability_insurance: { status: 'pending', expiryDate: null },
+        },
+        note: 'Documents de conformité requis avant premier paiement',
+      },
+      rating: {
+        average: 0,
+        count: 0,
+        distribution: { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 },
+      },
+      stats: {
+        jobsCompleted: 0,
+        totalEarnings: 0,
+        responseTime: 0,
+      },
+      createdAt: new Date(),
+      isActive: true,
+    };
+
+    // Save plumber to mockDataService
+    mockDataService.addPlumber(plumber);
+
+    // Create user account
+    const user = {
+      id: plumber.userId,
+      email: formData.email,
+      role: 'plumber',
+      plumberId: plumber.id,
+      firstName: plumber.firstName,
+      lastName: plumber.lastName,
+      createdAt: new Date(),
+    };
+
+    // Log user creation (in production, save to auth system)
+    console.log('Plumber registered:', plumber);
+    console.log('User created:', user);
+
+    toast.success('Inscription réussie! 6 mois gratuits activés.');
+    toast.info('Documents de conformité requis avant premier paiement');
+
+    // Navigate to plumber marketplace
+    navigate('/plumber-marketplace');
   };
 
   const progress = (currentStep / STEPS.length) * 100;

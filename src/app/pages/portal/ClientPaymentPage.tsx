@@ -5,6 +5,8 @@ import { Card, CardContent } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
 import { PaymentMethodSelector } from '../../components/payment/PaymentMethodSelector';
 import { PaymentResult } from '../../services/paymentService';
+import { mockDataService } from '../../services/mockDataService';
+import { toast } from 'sonner';
 
 interface PaymentPageState {
   amount: number;
@@ -37,7 +39,75 @@ export default function ClientPaymentPage() {
     setPaymentResult(result || null);
     setPaymentComplete(true);
 
-    // In production: Update backend with payment confirmation
+    // Save payment record to mockDataService
+    if (result && jobId) {
+      const payment = {
+        id: `PAY-${Date.now()}`,
+        jobId,
+        invoiceId: invoiceId || `INV-${Date.now()}`,
+        amount: result.amount,
+        method: result.method || 'credit_card',
+        status: authorizeOnly ? 'authorized' : 'paid',
+        cardLast4: result.cardDetails?.last4 || '',
+        transactionDate: result.transactionDate || new Date(),
+        createdAt: new Date(),
+      };
+
+      // Add payment
+      mockDataService.addPayment(payment);
+
+      // Update job status to 'paid'
+      if (!authorizeOnly) {
+        mockDataService.updateJob(jobId, {
+          status: 'paid',
+          paidAt: new Date(),
+          paymentId: payment.id,
+        });
+
+        // Trigger 75%/25% payment split
+        processPayout(jobId, payment.amount);
+      }
+
+      toast.success('Paiement enregistré avec succès!');
+    }
+  };
+
+  const processPayout = (jobId: string, totalAmount: number) => {
+    const job = mockDataService.getJobById(jobId);
+    if (!job) return;
+
+    const plumberId = job.plumberId || job.winnerId;
+    if (!plumberId) return;
+
+    // 75% immediate payout
+    const immediateAmount = totalAmount * 0.75;
+    const heldAmount = totalAmount * 0.25;
+
+    const immediatePayout = {
+      id: `PAYOUT-${Date.now()}-IMMEDIATE`,
+      jobId,
+      plumberId,
+      amount: immediateAmount,
+      type: 'immediate_75',
+      status: 'transferred',
+      transferredAt: new Date(),
+    };
+
+    const heldPayout = {
+      id: `PAYOUT-${Date.now()}-HELD`,
+      jobId,
+      plumberId,
+      amount: heldAmount,
+      type: 'held_25',
+      status: 'held',
+      releaseDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
+    };
+
+    // Save payouts
+    mockDataService.addPlumberPayout(immediatePayout);
+    mockDataService.addPlumberPayout(heldPayout);
+
+    console.log('Payment split processed:', { immediateAmount, heldAmount });
   };
 
   const handleContinue = () => {

@@ -399,10 +399,14 @@ export function generateAllMockData() {
   const historicalJobs = generateHistoricalJobs(200, plumbers, clients);
   console.log(`✅ Generated ${historicalJobs.length} historical jobs`);
 
+  // Generate active demo jobs for immediate testing
+  const activeDemoJobs = generateActiveDemoJobs(clients, 5);
+  console.log(`✅ Generated ${activeDemoJobs.length} active demo jobs for BET marketplace`);
+
   return {
     plumbers,
     clients,
-    jobs: historicalJobs,
+    jobs: [...historicalJobs, ...activeDemoJobs],
     bids: [],
     payments: [],
     complianceDocuments: [],
@@ -413,4 +417,100 @@ export function generateAllMockData() {
     internalAlerts: [],
     creditNotes: [],
   };
+}
+
+/**
+ * Generate active demo jobs ready for bidding
+ */
+function generateActiveDemoJobs(clients: any[], count: number = 5): any[] {
+  const jobs: any[] = [];
+  const now = new Date();
+
+  const demoJobTemplates = [
+    {
+      description: "Fuite d'eau importante sous l'évier de cuisine. L'eau coule constamment et nécessite une intervention rapide.",
+      urgency: 'urgent',
+      estimatedPrice: 250,
+      estimatedDuration: 60,
+      biddingMinutes: 5,
+    },
+    {
+      description: "Installation d'un nouveau chauffe-eau électrique 40 gallons. Le client a déjà acheté l'appareil.",
+      urgency: 'normal',
+      estimatedPrice: 600,
+      estimatedDuration: 180,
+      biddingMinutes: 120,
+    },
+    {
+      description: "Débouchage urgent de toilette principale. La maison n'a qu'une seule salle de bain.",
+      urgency: 'urgent',
+      estimatedPrice: 200,
+      estimatedDuration: 45,
+      biddingMinutes: 5,
+    },
+    {
+      description: "Réparation de robinet qui goutte constamment. Problème dans la salle de bain principale.",
+      urgency: 'normal',
+      estimatedPrice: 150,
+      estimatedDuration: 60,
+      biddingMinutes: 120,
+    },
+    {
+      description: "Installation de clapet anti-retour pour conformité municipale. Inspection prévue dans 2 semaines.",
+      urgency: 'normal',
+      estimatedPrice: 400,
+      estimatedDuration: 120,
+      biddingMinutes: 120,
+    },
+  ];
+
+  for (let i = 0; i < Math.min(count, demoJobTemplates.length); i++) {
+    const template = demoJobTemplates[i];
+    const client = randomPick(clients);
+    const jobId = `JOB-${Date.now() + i}-${randomString(4).toUpperCase()}`;
+
+    const biddingStartTime = new Date(now.getTime() - Math.random() * 60000); // Started 0-1 min ago
+    const biddingEndTime = new Date(biddingStartTime.getTime() + template.biddingMinutes * 60 * 1000);
+
+    const job = {
+      id: jobId,
+      clientId: client.id,
+      clientName: `${client.firstName} ${client.lastName}`,
+      description: template.description,
+      originalDescription: template.description,
+      address: client.address,
+      coordinates: client.coordinates,
+      urgency: template.urgency,
+      estimatedPrice: template.estimatedPrice,
+      estimatedDuration: template.estimatedDuration,
+      status: 'in_bet',
+      biddingStartTime,
+      biddingEndTime,
+      photos: [], // No photos for demo
+      timeSlots: template.urgency === 'normal' ? [
+        {
+          date: new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          startTime: '09:00',
+          endTime: '12:00',
+        },
+        {
+          date: new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          startTime: '13:00',
+          endTime: '17:00',
+        },
+      ] : [],
+      languagePreference: 'french',
+      requiresInsurance: true,
+      requiresRBQ: true,
+      paymentPreauthorized: true,
+      cardLast4: '4242',
+      createdAt: new Date(now.getTime() - Math.random() * 3600000), // Created 0-1 hour ago
+      approvedBy: 'admin-1',
+      approvedAt: biddingStartTime,
+    };
+
+    jobs.push(job);
+  }
+
+  return jobs;
 }

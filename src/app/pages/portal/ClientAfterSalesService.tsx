@@ -1,34 +1,93 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowLeft, CheckCircle, Clock, AlertCircle } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
 import { Badge } from '../../components/ui/badge';
 import { AfterSalesClaimForm } from '../../components/aftersales/AfterSalesClaimForm';
 import { Button } from '../../components/ui/button';
-
-// Mock invoice data
-const mockInvoice = {
-  id: 'INV-2026-001',
-  jobId: 'JOB-456',
-  date: new Date('2026-01-20'),
-  plumberName: 'Michel Lacoste',
-  address: '1234 Rue Principale, Montréal, QC H1A 1A1',
-  serviceType: 'Réparation fuite sous évier',
-  total: 287.44,
-};
+import { mockDataService } from '../../services/mockDataService';
+import { toast } from 'sonner';
 
 export default function ClientAfterSalesService() {
   const navigate = useNavigate();
   const { invoiceId } = useParams();
   const [claimSubmitted, setClaimSubmitted] = useState(false);
   const [submittedClaim, setSubmittedClaim] = useState<any>(null);
+  const [job, setJob] = useState<any>(null);
+  const [invoice, setInvoice] = useState<any>(null);
+
+  useEffect(() => {
+    // Load invoice and job data
+    if (invoiceId) {
+      // In a real app, you'd have invoice stored separately
+      // For now, find the job associated with this invoice ID pattern
+      const allJobs = mockDataService.getAllJobs();
+      const matchedJob = allJobs.find(j =>
+        j.invoiceId === invoiceId ||
+        j.status === 'completed' ||
+        j.status === 'paid'
+      );
+
+      if (matchedJob) {
+        setJob(matchedJob);
+        // Mock invoice data from job
+        setInvoice({
+          id: invoiceId,
+          jobId: matchedJob.id,
+          date: matchedJob.completedAt || new Date(),
+          plumberName: 'Plombier',
+          address: matchedJob.address,
+          serviceType: matchedJob.description,
+          total: matchedJob.winningBid || matchedJob.estimatedPrice || 0,
+        });
+      }
+    }
+  }, [invoiceId]);
 
   const handleClaimSubmit = (claim: any) => {
     console.log('Claim submitted:', claim);
-    setSubmittedClaim(claim);
-    setClaimSubmitted(true);
 
-    // In production: Send to backend API
+    // Save claim to mockDataService
+    const fullClaim = {
+      ...claim,
+      id: `CLAIM-${Date.now()}`,
+      invoiceId,
+      jobId: job?.id,
+      clientId: job?.clientId || 'client-1',
+      plumberId: job?.plumberId || job?.winnerId,
+      status: 'submitted',
+      submittedAt: new Date(),
+      holdAmount: invoice ? invoice.total * 0.25 : 0,
+    };
+
+    mockDataService.addClaim(fullClaim);
+
+    // Freeze held payment
+    if (job?.id) {
+      const heldPayouts = mockDataService.getHeldPayments(job.plumberId || job.winnerId);
+      heldPayouts.forEach(payout => {
+        if (payout.jobId === job.id) {
+          mockDataService.updatePlumberPayout(payout.id, {
+            status: 'frozen',
+            claimId: fullClaim.id,
+            frozenAt: new Date(),
+          });
+        }
+      });
+    }
+
+    // Send notification to plumber
+    mockDataService.addNotification({
+      recipientId: job?.plumberId || job?.winnerId,
+      type: 'aftersales_claim',
+      title: 'Nouvelle réclamation après-vente',
+      message: `Réclamation urgence ${claim.priority} pour job ${job?.id}`,
+      priority: claim.priority,
+    });
+
+    setSubmittedClaim(fullClaim);
+    setClaimSubmitted(true);
+    toast.success('Réclamation soumise avec succès!');
   };
 
   const handleBackToInvoice = () => {
