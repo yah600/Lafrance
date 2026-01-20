@@ -18,14 +18,18 @@
 
 3. **First load:** App generates 50 plumbers, 100 clients, and 5 active jobs automatically
 
+4. **Login page:** Navigate to `/bet-login` for the BET Marketplace unified login
+
 ---
 
 ## 🎬 Complete Demo Flow
 
 ### Step 0: See Active Jobs Immediately (30 sec)
 
-**Navigate to:** `/plumber-marketplace`  
-**Login:** `technicien@plomberie.com` / `password`
+**Navigate to:** `/bet-login`
+**Login as Plumber:** `technicien@plomberie.com` / `password`
+**Or use quick login button:** Click "Connexion Plombier"
+**Then navigate to:** `/plumber-marketplace`
 
 ✅ **5 active jobs** already in marketplace
 ✅ **Real countdown timers** ticking down
@@ -54,8 +58,10 @@
 
 ### Step 2: Admin Approves (1 min)
 
-**Navigate to:** `/admin/review-queue`  
-**Login:** `gabriel@lafrance.com` / `password`
+**Navigate to:** `/bet-login`
+**Login as Admin:** `gabriel@lafrance.com` / `password`
+**Or use quick login button:** Click "Connexion Admin"
+**Then navigate to:** `/admin/review-queue`
 
 1. **See pending job** in queue
 2. **Click job** to view details
@@ -71,8 +77,8 @@
 
 ### Step 3: Plumber Bids (1 min)
 
-**Navigate to:** `/plumber-marketplace`  
-**Login:** `technicien@plomberie.com` / `password`
+**Login as Plumber:** (if not already logged in from Step 0)
+**Navigate to:** `/plumber-marketplace`
 
 1. **See job** with countdown timer (updates every second!)
 2. **Distance shown:** "12.3 km"
@@ -339,13 +345,17 @@ Your demo is successful if you show:
 
 ## 📞 Quick Reference
 
-### Test Accounts
+### Test Accounts (BET Marketplace)
 
-| Role | Email | Password |
-|------|-------|----------|
-| Admin | `gabriel@lafrance.com` | `password` |
-| Plumber | `technicien@plomberie.com` | `password` |
-| Client | `client@example.com` | `password` |
+**Login page:** `/bet-login`
+
+| Role | Email | Password | Quick Login |
+|------|-------|----------|-------------|
+| Internal Admin | `gabriel@lafrance.com` | `password` | Green button |
+| Plumber | `technicien@plomberie.com` | `password` | Blue button |
+| Client | `client@example.com` | `password` | Purple button |
+
+**All use the same password:** `password`
 
 ### Key Routes
 

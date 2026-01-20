@@ -65,6 +65,10 @@ import AdminClaimArbitrationPage from './pages/admin/AdminClaimArbitrationPage';
 import AdminPaymentManagement from './pages/admin/AdminPaymentManagement';
 import AdminReviewQueue from './pages/admin/AdminReviewQueue';
 
+// BET Marketplace Authentication
+import BETLogin from './pages/auth/BETLogin';
+import { PlumberRoute, ClientRoute, AdminRoute } from './components/auth/BETProtectedRoute';
+
 // Suppress Figma Make internal errors - IMMEDIATELY on module load
 (function() {
   if (typeof window === 'undefined') return;
@@ -253,10 +257,11 @@ function AppRoutes() {
   return (
     <Routes>
       {/* Auth Routes */}
-      <Route 
-        path="/login" 
-        element={isAuthenticated ? <Navigate to="/" replace /> : <Login />} 
+      <Route
+        path="/login"
+        element={isAuthenticated ? <Navigate to="/" replace /> : <Login />}
       />
+      <Route path="/bet-login" element={<BETLogin />} />
       <Route path="/client-login" element={<ClientLogin />} />
       <Route path="/client-register" element={<ClientRegistration />} />
       <Route path="/plumber-register" element={<PlumberRegistration />} />
@@ -441,58 +446,78 @@ function AppRoutes() {
           </RoleProtectedRoute>
         } />
 
-        {/* GROUPE LAFRANCE APP - Plumber routes */}
+        {/* GROUPE LAFRANCE APP - Plumber routes (BET Marketplace) */}
         <Route path="plumber-marketplace" element={
-          <RoleProtectedRoute allowedRoles={['super-admin', 'division-head', 'operations-manager', 'admin', 'dispatcher', 'technician']}>
+          <PlumberRoute>
             <BiddingMarketplacePlumber />
-          </RoleProtectedRoute>
+          </PlumberRoute>
         } />
         <Route path="plumber/aftersales" element={
-          <RoleProtectedRoute allowedRoles={['super-admin', 'division-head', 'operations-manager', 'admin', 'dispatcher', 'technician']}>
+          <PlumberRoute>
             <PlumberAfterSalesClaimsList />
-          </RoleProtectedRoute>
+          </PlumberRoute>
         } />
         <Route path="plumber/aftersales/:claimId" element={
-          <RoleProtectedRoute allowedRoles={['super-admin', 'division-head', 'operations-manager', 'admin', 'dispatcher', 'technician']}>
+          <PlumberRoute>
             <PlumberClaimDetail />
-          </RoleProtectedRoute>
+          </PlumberRoute>
         } />
         <Route path="plumber/payments" element={
-          <RoleProtectedRoute allowedRoles={['super-admin', 'division-head', 'operations-manager', 'admin', 'dispatcher', 'technician']}>
+          <PlumberRoute>
             <PlumberPaymentsDashboard />
-          </RoleProtectedRoute>
+          </PlumberRoute>
         } />
 
-        {/* GROUPE LAFRANCE APP - Admin routes */}
+        {/* GROUPE LAFRANCE APP - Admin routes (BET Internal Admin) */}
         <Route path="admin/review-queue" element={
-          <RoleProtectedRoute allowedRoles={['super-admin', 'admin']}>
+          <AdminRoute>
             <AdminReviewQueue />
-          </RoleProtectedRoute>
+          </AdminRoute>
         } />
         <Route path="admin/aftersales/:claimId" element={
-          <RoleProtectedRoute allowedRoles={['super-admin', 'admin']}>
+          <AdminRoute>
             <AdminClaimArbitrationPage />
-          </RoleProtectedRoute>
+          </AdminRoute>
         } />
         <Route path="admin/payments" element={
-          <RoleProtectedRoute allowedRoles={['super-admin', 'admin']}>
+          <AdminRoute>
             <AdminPaymentManagement />
-          </RoleProtectedRoute>
+          </AdminRoute>
         } />
 
-        {/* GROUPE LAFRANCE APP - Client routes */}
-        <Route path="client-request" element={<ClientRequestForm />} />
+        {/* GROUPE LAFRANCE APP - Client routes (BET Marketplace) */}
+        <Route path="client-request" element={
+          <ClientRoute>
+            <ClientRequestForm />
+          </ClientRoute>
+        } />
       </Route>
 
       {/* Mobile Technician App Routes */}
       <Route path="/mobile/login" element={<MobileLogin />} />
-      <Route path="/mobile/job/:jobId" element={<MobileJobWorkflow />} />
+      <Route path="/mobile/job/:jobId" element={
+        <PlumberRoute>
+          <MobileJobWorkflow />
+        </PlumberRoute>
+      } />
       <Route path="/mobile/*" element={<MobileTechApp />} />
 
-      {/* Customer Portal Routes */}
-      <Route path="/portal/invoice/:invoiceId" element={<ClientInvoiceView />} />
-      <Route path="/portal/aftersales/:invoiceId" element={<ClientAfterSalesService />} />
-      <Route path="/portal/payment" element={<ClientPaymentPage />} />
+      {/* Customer Portal Routes (BET Marketplace) */}
+      <Route path="/portal/invoice/:invoiceId" element={
+        <ClientRoute>
+          <ClientInvoiceView />
+        </ClientRoute>
+      } />
+      <Route path="/portal/aftersales/:invoiceId" element={
+        <ClientRoute>
+          <ClientAfterSalesService />
+        </ClientRoute>
+      } />
+      <Route path="/portal/payment" element={
+        <ClientRoute>
+          <ClientPaymentPage />
+        </ClientRoute>
+      } />
       <Route path="/portal/*" element={<CustomerPortal />} />
       <Route path="/client-portal/*" element={<ClientPortalMain />} />
 
