@@ -22,6 +22,12 @@ export enum AfterSalesPriority {
   AESTHETIC = 'aesthetic', // Cosmetic issue - 7 days response
 }
 
+export enum AfterSalesClaimType {
+  WARRANTY = 'warranty', // Manufacturing defect or work-related problem
+  DAMAGE = 'damage', // Damage caused during work
+  DISSATISFACTION = 'dissatisfaction', // Quality or result unsatisfactory
+}
+
 export interface AfterSalesCase {
   id: string;
   originalJobId: string;
