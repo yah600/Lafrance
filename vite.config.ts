@@ -16,4 +16,11 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  build: {
+    // Suppress chunk size warning (app is feature-rich, 2.5MB is acceptable)
+    chunkSizeWarningLimit: 3000, // 3MB limit instead of default 500KB
+
+    // Enable source maps for better debugging in production
+    sourcemap: false, // Set to true if you need debugging in production
+  },
 })
