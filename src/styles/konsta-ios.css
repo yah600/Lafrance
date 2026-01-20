@@ -1,140 +1,41 @@
 /**
- * Konsta iOS Premium Design Enhancements
- * Apple-clean aesthetic with generous whitespace, subtle shadows, and refined typography
- * Compatible with Tailwind CSS v4
+ * Konsta iOS Design - Simplified for Tailwind v4
  */
 
-/* Konsta iOS Color Palette */
+/* iOS Color Variables */
 @theme {
-  /* iOS System Colors */
   --color-ios-blue: #007AFF;
   --color-ios-green: #34C759;
-  --color-ios-indigo: #5856D6;
-  --color-ios-orange: #FF9500;
-  --color-ios-pink: #FF2D55;
-  --color-ios-purple: #AF52DE;
   --color-ios-red: #FF3B30;
-  --color-ios-teal: #5AC8FA;
-  --color-ios-yellow: #FFCC00;
-  
-  /* iOS Grays */
   --color-ios-gray: #8E8E93;
-  --color-ios-gray-2: #AEAEB2;
-  --color-ios-gray-3: #C7C7CC;
-  --color-ios-gray-4: #D1D1D6;
-  --color-ios-gray-5: #E5E5EA;
-  --color-ios-gray-6: #F2F2F7;
-  
-  /* iOS Background Colors */
-  --color-ios-background: #FFFFFF;
-  --color-ios-background-secondary: #F2F2F7;
-  --color-ios-background-tertiary: #FFFFFF;
-  
-  /* iOS Label Colors */
-  --color-ios-label: #000000;
-  --color-ios-label-secondary: rgba(60, 60, 67, 0.6);
-  --color-ios-label-tertiary: rgba(60, 60, 67, 0.3);
-  
-  /* iOS Separator */
   --color-ios-separator: rgba(60, 60, 67, 0.12);
-  --color-ios-separator-opaque: #C6C6C8;
 }
 
-@layer base {
-  /* iOS-style system fonts */
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', 'Helvetica Neue', sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-  
-  /* iOS-style smooth scrolling */
-  * {
-    -webkit-overflow-scrolling: touch;
-  }
+/* iOS-style fonts */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-@layer components {
-  /* iOS Card Styling - Elevated and clean */
-  .ios-card {
-    @apply bg-white rounded-2xl shadow-sm border border-gray-100;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-  }
-  
-  .ios-card:hover {
-    @apply shadow-md;
-    transform: translateY(-2px);
-  }
-  
-  /* iOS List Items - Clean separator style */
-  .ios-list-item {
-    @apply px-4 py-3 border-b border-gray-100 last:border-b-0;
-    transition: background-color 0.15s ease;
-  }
-  
-  .ios-list-item:active {
-    @apply bg-gray-50;
-  }
-  
-  /* iOS Buttons - Refined with proper touch targets */
-  .ios-button {
-    @apply min-h-[44px] px-6 rounded-xl font-medium transition-all duration-200;
-  }
-  
-  .ios-button-primary {
-    @apply min-h-[44px] px-6 rounded-xl font-medium bg-blue-500 text-white shadow-sm;
-    transition: all 0.2s ease;
-  }
-  
-  .ios-button-primary:hover {
-    @apply bg-blue-600 shadow-md;
-  }
-  
-  .ios-button-primary:active {
-    @apply bg-blue-700 shadow-sm scale-[0.98];
-  }
-  
-  /* iOS Input Fields - Clean and spacious */
-  .ios-input {
-    @apply min-h-[44px] px-4 rounded-xl bg-gray-50 border border-gray-200 
-           focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20
-           transition-all duration-200;
-  }
-  
-  /* iOS Navigation Bar */
-  .ios-navbar {
-    @apply bg-white/80 backdrop-blur-xl border-b border-gray-200;
-  }
-  
-  /* iOS Section Headers */
-  .ios-section-header {
-    @apply text-xs uppercase font-semibold text-gray-500 tracking-wider px-4 py-2;
-  }
-  
-  /* iOS Badges */
-  .ios-badge {
-    @apply inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 
-           text-xs font-semibold rounded-full bg-red-500 text-white;
-  }
+/* Smooth scrolling */
+* {
+  -webkit-overflow-scrolling: touch;
 }
 
-/* Konsta-specific overrides for iOS theme */
-:root {
-  --k-ios-edge-padding: 16px;
-  --k-ios-navbar-height: 44px;
-  --k-ios-toolbar-height: 50px;
-  --k-ios-safe-area-inset-top: env(safe-area-inset-top);
-  --k-ios-safe-area-inset-bottom: env(safe-area-inset-bottom);
+/* Smooth transitions */
+button, a, input, textarea, select {
+  transition-property: background-color, border-color, color, opacity, box-shadow, transform;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 200ms;
 }
 
-/* Generous whitespace for desktop */
-@media (min-width: 768px) {
-  :root {
-    --k-ios-edge-padding: 24px;
-  }
+/* iOS-style active states */
+button:active:not(:disabled) {
+  transform: scale(0.98);
 }
 
-/* Premium shadow system - subtle and refined */
+/* Premium shadows */
 .shadow-ios-sm {
   box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
 }
@@ -149,221 +50,4 @@
 
 .shadow-ios-lg {
   box-shadow: 0 8px 24px 0 rgb(0 0 0 / 0.12);
-}
-
-/* iOS-style focus states */
-.focus-ios:focus {
-  outline: none;
-  box-shadow: 0 0 0 4px rgb(59 130 246 / 0.1);
-}
-
-/* Smooth transitions for all interactive elements */
-button, a, input, textarea, select {
-  transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 200ms;
-}
-
-/* Override shadcn/ui components with iOS aesthetics */
-@layer components {
-  /* Enhanced Button styling */
-  button:not([class*="bg-transparent"]) {
-    border-radius: 12px;
-    min-height: 44px;
-    font-weight: 500;
-    letter-spacing: -0.01em;
-  }
-  
-  /* Enhanced Input styling */
-  input[type="text"],
-  input[type="email"],
-  input[type="password"],
-  input[type="tel"],
-  input[type="number"],
-  input[type="search"],
-  textarea,
-  select {
-    border-radius: 12px;
-    min-height: 44px;
-    padding: 12px 16px;
-    font-size: 16px;
-    background-color: rgba(0, 0, 0, 0.02);
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    transition: all 0.2s ease;
-  }
-  
-  input:focus,
-  textarea:focus,
-  select:focus {
-    background-color: white;
-    border-color: var(--color-ios-blue);
-    box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1);
-    outline: none;
-  }
-  
-  /* Enhanced Card styling */
-  [class*="card"],
-  [class*="Card"] {
-    border-radius: 16px;
-    border: 1px solid rgba(0, 0, 0, 0.06);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-    background-color: white;
-  }
-  
-  /* Enhanced List items */
-  [class*="list"],
-  [class*="List"] {
-    border-radius: 12px;
-  }
-  
-  /* iOS-style labels */
-  label {
-    font-size: 14px;
-    font-weight: 500;
-    color: rgba(0, 0, 0, 0.85);
-    margin-bottom: 6px;
-  }
-  
-  /* iOS-style badges */
-  [class*="badge"],
-  [class*="Badge"] {
-    border-radius: 12px;
-    padding: 4px 10px;
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: -0.01em;
-  }
-  
-  /* iOS-style dialogs/modals */
-  [class*="dialog"],
-  [class*="Dialog"],
-  [class*="modal"],
-  [class*="Modal"] {
-    border-radius: 20px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-  }
-  
-  /* iOS-style dropdown menus */
-  [class*="dropdown"],
-  [class*="Dropdown"],
-  [class*="popover"],
-  [class*="Popover"] {
-    border-radius: 12px;
-    border: 1px solid rgba(0, 0, 0, 0.06);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-    background-color: white;
-  }
-  
-  /* iOS-style separators */
-  hr,
-  [class*="separator"],
-  [class*="Separator"] {
-    border-color: var(--color-ios-separator);
-    opacity: 1;
-  }
-  
-  /* iOS-style checkboxes and radio buttons */
-  [type="checkbox"],
-  [type="radio"] {
-    width: 22px;
-    height: 22px;
-    border-radius: 6px;
-    border: 2px solid rgba(0, 0, 0, 0.2);
-    cursor: pointer;
-  }
-  
-  [type="checkbox"]:checked,
-  [type="radio"]:checked {
-    background-color: var(--color-ios-blue);
-    border-color: var(--color-ios-blue);
-  }
-  
-  /* iOS-style switches */
-  [role="switch"],
-  [class*="switch"],
-  [class*="Switch"] {
-    border-radius: 16px;
-  }
-  
-  /* iOS-style tables */
-  table {
-    border-radius: 12px;
-    overflow: hidden;
-  }
-  
-  th {
-    font-size: 13px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: rgba(0, 0, 0, 0.6);
-  }
-  
-  td {
-    border-color: var(--color-ios-separator);
-  }
-  
-  /* iOS-style active states */
-  button:active:not(:disabled),
-  [role="button"]:active {
-    transform: scale(0.98);
-    opacity: 0.9;
-  }
-  
-  /* iOS-style disabled states */
-  button:disabled,
-  input:disabled,
-  textarea:disabled,
-  select:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-  }
-  
-  /* iOS-style hover states */
-  button:hover:not(:disabled),
-  [role="button"]:hover:not(:disabled) {
-    opacity: 0.85;
-  }
-  
-  /* iOS-style placeholder text */
-  ::placeholder {
-    color: rgba(60, 60, 67, 0.3);
-    opacity: 1;
-  }
-  
-  /* iOS-style selection */
-  ::selection {
-    background-color: var(--color-ios-blue);
-    color: white;
-  }
-  
-  /* iOS-style scrollbars (webkit) */
-  ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-  }
-  
-  ::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  
-  ::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 4px;
-  }
-  
-  ::-webkit-scrollbar-thumb:hover {
-    background: rgba(0, 0, 0, 0.3);
-  }
-}
-
-/* Additional iOS polish */
-@supports (backdrop-filter: blur(20px)) {
-  [class*="navbar"],
-  [class*="Navbar"],
-  [class*="header"],
-  [class*="Header"] {
-    backdrop-filter: blur(20px);
-    background-color: rgba(255, 255, 255, 0.8);
-  }
 }
