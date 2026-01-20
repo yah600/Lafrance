@@ -50,6 +50,11 @@ import RemoteQuoting from './pages/RemoteQuoting';
 import BiddingMarketplace from './pages/BiddingMarketplace';
 import ContractorBids from './pages/ContractorBids';
 
+// GROUPE LAFRANCE APP - New pages
+import PlumberRegistration from './pages/auth/PlumberRegistration';
+import ClientRequestForm from './pages/portal/ClientRequestForm';
+import BiddingMarketplacePlumber from './pages/BiddingMarketplacePlumber';
+
 // Suppress Figma Make internal errors - IMMEDIATELY on module load
 (function() {
   if (typeof window === 'undefined') return;
@@ -244,6 +249,7 @@ function AppRoutes() {
       />
       <Route path="/client-login" element={<ClientLogin />} />
       <Route path="/client-register" element={<ClientRegistration />} />
+      <Route path="/plumber-register" element={<PlumberRegistration />} />
       <Route path="/2fa" element={<TwoFactorAuth />} />
       <Route path="/reset-password" element={<PasswordReset />} />
 
@@ -424,6 +430,16 @@ function AppRoutes() {
             <ContractorBids />
           </RoleProtectedRoute>
         } />
+
+        {/* GROUPE LAFRANCE APP - Plumber routes */}
+        <Route path="plumber-marketplace" element={
+          <RoleProtectedRoute allowedRoles={['super-admin', 'division-head', 'operations-manager', 'admin', 'dispatcher', 'technician']}>
+            <BiddingMarketplacePlumber />
+          </RoleProtectedRoute>
+        } />
+
+        {/* GROUPE LAFRANCE APP - Client routes */}
+        <Route path="client-request" element={<ClientRequestForm />} />
       </Route>
 
       {/* Mobile Technician App Routes */}
