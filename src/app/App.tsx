@@ -54,6 +54,7 @@ import ContractorBids from './pages/ContractorBids';
 import PlumberRegistration from './pages/auth/PlumberRegistration';
 import ClientRequestForm from './pages/portal/ClientRequestForm';
 import BiddingMarketplacePlumber from './pages/BiddingMarketplacePlumber';
+import MobileJobWorkflow from './pages/mobile/MobileJobWorkflow';
 
 // Suppress Figma Make internal errors - IMMEDIATELY on module load
 (function() {
@@ -444,6 +445,7 @@ function AppRoutes() {
 
       {/* Mobile Technician App Routes */}
       <Route path="/mobile/login" element={<MobileLogin />} />
+      <Route path="/mobile/job/:jobId" element={<MobileJobWorkflow />} />
       <Route path="/mobile/*" element={<MobileTechApp />} />
 
       {/* Customer Portal Routes */}
