@@ -13,7 +13,6 @@ import { useAuth } from '../../context/AuthContext';
 import { DivisionType } from '../../types/user';
 import { DIVISIONS } from '../../data/divisions';
 import { toast } from 'sonner';
-import logoImage from 'figma:asset/83a3f7928951158ed260807664911891c4b1df6f.png';
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);

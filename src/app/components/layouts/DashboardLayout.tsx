@@ -49,7 +49,7 @@ import { useIsMobile } from '../../hooks/useMediaQuery';
 import NotificationPanel from '../NotificationPanel';
 import CommandPalette from '../CommandPalette';
 import Breadcrumbs from '../Breadcrumbs';
-import logoImage from 'figma:asset/83a3f7928951158ed260807664911891c4b1df6f.png';
+// Logo removed - using text-based logo instead
 
 const roleLabels: Record<string, string> = {
   'super-admin': 'Super Administrateur',
@@ -164,7 +164,15 @@ export default function DashboardLayout() {
       <aside className="hidden lg:flex w-64 bg-[var(--sidebar)] text-[var(--sidebar-foreground)] flex-col">
         {/* Logo */}
         <div className="h-16 flex items-center px-6 border-b border-[var(--sidebar-border)]">
-          <img src={logoImage} alt="Groupe G. Lafrance - Synergair Platform" className="h-10 w-auto object-contain" />
+          <div className="flex items-center gap-2">
+            <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-800 rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-xl">GL</span>
+            </div>
+            <div>
+              <div className="text-sm font-bold text-white">GROUPE LAFRANCE</div>
+              <div className="text-xs text-gray-400">Plateforme Pro</div>
+            </div>
+          </div>
         </div>
 
         {/* Navigation */}
@@ -274,7 +282,15 @@ export default function DashboardLayout() {
       <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
         <SheetContent side="left" className="w-[280px] p-0 bg-[var(--sidebar)] text-[var(--sidebar-foreground)]">
           <SheetHeader className="p-6 border-b border-[var(--sidebar-border)]">
-            <img src={logoImage} alt="Groupe G. Lafrance - Synergair Platform" className="h-10 w-auto object-contain" />
+            <div className="flex items-center gap-2">
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-800 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-xl">GL</span>
+              </div>
+              <div>
+                <div className="text-sm font-bold text-white">GROUPE LAFRANCE</div>
+                <div className="text-xs text-gray-400">Plateforme Pro</div>
+              </div>
+            </div>
           </SheetHeader>
           
           <nav className="px-3 py-4 space-y-1">
