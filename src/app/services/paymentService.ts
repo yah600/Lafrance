@@ -54,7 +54,7 @@ class PaymentService {
 
   constructor() {
     // In production, load from environment variables
-    this.stripePublicKey = process.env.VITE_STRIPE_PUBLIC_KEY || 'pk_test_demo';
+    this.stripePublicKey = import.meta.env.VITE_STRIPE_PUBLIC_KEY || 'pk_test_demo';
   }
 
   /**
