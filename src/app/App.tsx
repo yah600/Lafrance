@@ -53,6 +53,7 @@ import ContractorBids from './pages/ContractorBids';
 // GROUPE LAFRANCE APP - New pages
 import PlumberRegistration from './pages/auth/PlumberRegistration';
 import ClientRequestForm from './pages/portal/ClientRequestForm';
+import ClientInvoiceView from './pages/portal/ClientInvoiceView';
 import BiddingMarketplacePlumber from './pages/BiddingMarketplacePlumber';
 import MobileJobWorkflow from './pages/mobile/MobileJobWorkflow';
 
@@ -449,6 +450,7 @@ function AppRoutes() {
       <Route path="/mobile/*" element={<MobileTechApp />} />
 
       {/* Customer Portal Routes */}
+      <Route path="/portal/invoice/:invoiceId" element={<ClientInvoiceView />} />
       <Route path="/portal/*" element={<CustomerPortal />} />
       <Route path="/client-portal/*" element={<ClientPortalMain />} />
 
